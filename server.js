@@ -1,5 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const User = require("./models/User");
 
 const app = express();
 const PORT = 3000;
@@ -134,6 +136,83 @@ app.delete("/api/books/:id", async (req, res) => {
     console.error(error);
     res.status(500).json({
       message: "Erreur lors de la suppression du livre"
+    });
+  }
+});
+
+// Route POST pour créer un utilisateur
+app.post("/api/auth/signup", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Vérifier si l'utilisateur existe déjà
+    const utilisateurExistant = await User.findOne({ email });
+
+    if (utilisateurExistant) {
+      return res.status(400).json({
+        message: "Cet email est déjà utilisé"
+      });
+    }
+
+    // Hacher le mot de passe
+    const motDePasseHache = await bcrypt.hash(password, 10);
+
+    // Créer l'utilisateur
+    const utilisateur = new User({
+      email: email,
+      password: motDePasseHache
+    });
+
+    // Enregistrer dans MongoDB
+    await utilisateur.save();
+
+    res.status(201).json({
+      message: "Utilisateur créé !"
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Erreur lors de la création de l'utilisateur"
+    });
+  }
+});
+
+// Route POST pour connecter un utilisateur
+app.post("/api/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Chercher l'utilisateur dans la base de données
+    const utilisateur = await User.findOne({ email });
+
+    if (!utilisateur) {
+      return res.status(401).json({
+        message: "Email ou mot de passe incorrect"
+      });
+    }
+
+    // Vérifier le mot de passe
+    const motDePasseCorrect = await bcrypt.compare(
+      password,
+      utilisateur.password
+    );
+
+    if (!motDePasseCorrect) {
+      return res.status(401).json({
+        message: "Email ou mot de passe incorrect"
+      });
+    }
+
+    // Pour le moment, connexion réussie
+    res.json({
+      message: "Connexion réussie !"
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Erreur lors de la connexion"
     });
   }
 });
