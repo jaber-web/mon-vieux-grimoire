@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 
 const app = express();
@@ -204,11 +205,18 @@ app.post("/api/auth/login", async (req, res) => {
       });
     }
 
-    // Pour le moment, connexion réussie
-    res.json({
-      message: "Connexion réussie !"
-    });
+// Générer le token JWT
+const token = jwt.sign(
+  { userId: utilisateur._id },
+  "SECRET_TOKEN",
+  { expiresIn: "24h" }
+);
 
+// Connexion réussie
+res.json({
+  message: "Connexion réussie !",
+  token: token
+});
   } catch (error) {
     console.error(error);
     res.status(500).json({
