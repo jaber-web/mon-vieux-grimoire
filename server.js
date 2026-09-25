@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
+const auth = require("./middleware/auth");
 
 const app = express();
 const PORT = 3000;
@@ -31,7 +32,7 @@ app.get("/", (req, res) => {
 });
 
 // Route POST pour ajouter un livre
-app.post("/api/books", async (req, res) => {
+app.post("/api/books", auth, async (req, res) => {
   try {
     console.log(req.body);
 
