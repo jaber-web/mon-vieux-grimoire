@@ -56,7 +56,7 @@ app.post("/api/books", auth, async (req, res) => {
   }
 });
 
-app.get("/api/books", async (req, res) => {
+app.get("/api/books", auth, async (req, res) => {
   try {
     const livres = await Livre.find();
 
