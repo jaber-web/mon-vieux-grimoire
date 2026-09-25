@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 const auth = require("./middleware/auth");
+const multer = require("./middleware/multer-config");
 
 const app = express();
 const PORT = 3000;
@@ -32,9 +33,10 @@ app.get("/", (req, res) => {
 });
 
 // Route POST pour ajouter un livre
-app.post("/api/books", auth, async (req, res) => {
+app.post("/api/books", auth, multer, async (req, res) => {
   try {
     console.log(req.body);
+    console.log(req.file);
 
     const livre = new Livre({
       title: req.body.title,
@@ -48,7 +50,8 @@ app.post("/api/books", auth, async (req, res) => {
       livre: livreSauvegarde
     });
 
-  } catch (error) {
+  }
+  catch (error) {
     console.error(error);
     res.status(500).json({
       message: "Erreur lors de l'enregistrement du livre"
