@@ -70,7 +70,7 @@ app.get("/api/books", auth, async (req, res) => {
 });
 
 // Route GET pour récupérer un seul livre
-app.get("/api/books/:id", async (req, res) => {
+app.get("/api/books/:id", auth, async (req, res) => {
   try {
     const livre = await Livre.findById(req.params.id);
 
@@ -90,7 +90,7 @@ app.get("/api/books/:id", async (req, res) => {
 });
 
 // Route PUT pour modifier un livre
-app.put("/api/books/:id", async (req, res) => {
+app.put("/api/books/:id", auth, async (req, res) => {
   try {
     const livre = await Livre.findByIdAndUpdate(
       req.params.id,
@@ -120,7 +120,7 @@ app.put("/api/books/:id", async (req, res) => {
 });
 
 // Route DELETE pour supprimer un livre
-app.delete("/api/books/:id", async (req, res) => {
+app.delete("/api/books/:id", auth, async (req, res) => {
   try {
     const livre = await Livre.findByIdAndDelete(req.params.id);
 
